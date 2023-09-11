@@ -4,6 +4,7 @@ class Hwmalloc(CMakePackage, CudaPackage, ROCmPackage):
     """"HWMALLOC is a allocator which supports memory registration for e.g. remote memory access"""
 
     homepage="https://github.com/ghex-org/hwmalloc"
+    url = "https://github.com/ghex-org/hwmalloc/archive/refs/tags/v0.2.0.tar.gz"
     git = "https://github.com/ghex-org/hwmalloc.git"
     maintainers = ["boeschf"]
 
@@ -13,6 +14,7 @@ class Hwmalloc(CMakePackage, CudaPackage, ROCmPackage):
 
     depends_on("numactl", type=("build", "run"))
     depends_on("boost", type=("build"))
+    depends_on("cmake@3.19:", type="build")
 
     variant("numa-throws", default=False, description="True if numa_tools may throw during initialization")
     variant("numa-local", default=True, description="Use numa_tools for local node allocations")
@@ -23,6 +25,7 @@ class Hwmalloc(CMakePackage, CudaPackage, ROCmPackage):
             self.define_from_variant("HWMALLOC_NUMA_THROWS", "numa-throws"),
             self.define_from_variant("HWMALLOC_NUMA_FOR_LOCAL", "numa-local"),
             self.define_from_variant("HWMALLOC_ENABLE_LOGGING", "logging"),
+            self.define("HWMALLOC_WITH_TESTING", self.run_tests),
         ]
 
         if "+cuda" in self.spec:
