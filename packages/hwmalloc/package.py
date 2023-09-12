@@ -11,6 +11,8 @@ class Hwmalloc(CMakePackage, CudaPackage, ROCmPackage):
     version("0.2.0", sha256="734758a390a3258b86307e4aef50a7ca2e5d0e2e579f18aeefcd05397e114419")
     version("0.1.0", sha256="06e9bfcef0ecce4d19531ccbe03592b502d1281c7a092bc0ff51ca187899b21c")
     version("master", branch="master")
+    # for dev-build
+    version("develop")
 
     depends_on("numactl", type=("build", "run"))
     depends_on("boost", type=("build"))
