@@ -1,0 +1,24 @@
+name: test-hwmalloc
+
+on:
+  push:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  spack-install:
+    runs-on: ubuntu-latest
+    container: boeschf/ghex-org
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: spack-repos
+      - name: Build and Test
+        shell: bash
+        run: |
+          . /opt/spack/share/spack/setup-env-clean.sh
+          spack repo add /spack-repos
+          spack spec -I hwmalloc
+          spack install --test=root hwmalloc
