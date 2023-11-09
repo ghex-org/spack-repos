@@ -60,8 +60,8 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
             self.define_from_variant("OOMPH_UCX_USE_PMI", "use-pmix"),
             self.define_from_variant("OOMPH_UCX_USE_SPIN_LOCK", "use-spin-lock"),
             self.define("OOMPH_WITH_TESTING", self.run_tests),
-            self.define("OOMPH_GIT_SUBMODULE", false),
-            self.define("OOMPH_USE_BUNDLED_LIBS", false),
+            self.define("OOMPH_GIT_SUBMODULE", False),
+            self.define("OOMPH_USE_BUNDLED_LIBS", False),
         ]
         
         if self.spec.variants["fortran-fp"].value == "float":
