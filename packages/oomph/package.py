@@ -10,7 +10,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
 
     version("0.2.0", sha256="135cdb856aa817c053b6af1617869dbcd0ee97d34607e78874dd775ea389434e")
     version("0.1.0", sha256="0ff36db0a5f30ae1bb02f6db6d411ea72eadd89688c00f76b4e722bd5a9ba90b")
-    version("master", branch="master")
+    version("main", branch="main")
     # for dev-build
     version("develop")
     
