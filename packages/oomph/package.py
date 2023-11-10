@@ -98,6 +98,4 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         elif "libfabric-provider=pwm2" in self.spec:
             args.append("-DOOMPH_LIBFABRIC_PROVIDER=psm2")
 
-        args.append("-DHWMALLOC_DIR="+self.spec["hwmalloc"].prefix+"/lib64/cmake")
-
         return args
