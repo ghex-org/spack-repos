@@ -66,7 +66,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         if self.run_tests:
             self.define("MPIEXEC_PREFLAGS", "--oversubscribe")
 
-        if self.spec.variants["fortran-bindings"]:
+        if self.spec.variants["fortran-bindings"].value == True:
             if self.spec.variants["fortran-fp"].value == "float":
                 args.append("-DOOMPH_FORTRAN_FP=float")
             else:
