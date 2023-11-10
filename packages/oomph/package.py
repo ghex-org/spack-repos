@@ -51,6 +51,8 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("mpi")
     depends_on("boost")
 
+    depends_on("googletest", type="test")
+
     def cmake_args(self):
         args = [
             self.define_from_variant("OOMPH_BUILD_FORTRAN", "fortran-bindings"),
