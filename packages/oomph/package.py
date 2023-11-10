@@ -22,7 +22,8 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     with when("+fortran-bindings"):
         variant("fortran-fp", default="float", description="Floating point type", values=("float", "double"), multi=False)
         variant("fortran-openmp", default=True, description="Compile with OpenMP")
-    
+
+    variant("enable-barrier", default=True, description="Enalbe thread barrier (disable for task based runtime)")
 
     depends_on("hwmalloc+cuda", when="+cuda")
     depends_on("hwmalloc+rocm", when="+rocm")
@@ -39,19 +40,16 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         depends_on("pmix", when="+use-pmix")
 
     with when("backend=libfabric"):
-        variant("libfabric-provider", default="sockets,tcp,udp", description="fabric",
-            values=("cxi", "efa", "gni", "mlx", "mrail", "opx", "psm", "psm2", "psm3", "rxm", "rxd",
-                    "shm", "sockets", "tcp", "udp", "usnic", "verbs", "xpmem"),
-            multi=True)
-        depends_on("libfabric") # TODO: dependency should use fabrics=... taken from above
+        variant("libfabric-provider", default="tcp", description="fabric", values=("cxi", "gni", "psm2", "sockets", "tcp", "verbs"), multi=False)
+        depends_on("libfabric fabrics=cxi", when="libfabric-provider=cxi")
+        depends_on("libfabric fabrics=gni", when="libfabric-provider=gni")
+        depends_on("libfabric fabrics=psm2", when="libfabric-provider=psm2")
+        depends_on("libfabric fabrics=sockets", when="libfabric-provider=sockets")
+        depends_on("libfabric fabrics=tcp", when="libfabric-provider=tcp")
+        depends_on("libfabric fabrics=verbs", when="libfabric-provider=verbs")
 
     depends_on("mpi")
     depends_on("boost")
-
-    # TODO: add these variants
-    #OOMPH_ENABLE_BARRIER             ON
-    #OOMPH_RECURSION_DEPTH            20
-    #OOMPH_TEST_LEAK_GPU_MEMORY	  OFF
 
     def cmake_args(self):
         args = [
@@ -59,22 +57,33 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
             self.define_from_variant("OOMPH_FORTRAN_OPENMP", "fortran-openmp"),
             self.define_from_variant("OOMPH_UCX_USE_PMI", "use-pmix"),
             self.define_from_variant("OOMPH_UCX_USE_SPIN_LOCK", "use-spin-lock"),
+            self.define_from_variant("OOMPH_ENABLE_BARRIER", "enable-barrier"),
             self.define("OOMPH_WITH_TESTING", self.run_tests),
             self.define("OOMPH_GIT_SUBMODULE", False),
             self.define("OOMPH_USE_BUNDLED_LIBS", False),
         ]
-        
-        if self.spec.variants["fortran-fp"].value == "float":
-            args.append("-DOOMPH_FORTRAN_FP=float")
-        else:
-            args.append("-DOOMPH_FORTRAN_FP=double")
-    
+
+        if self.run_tests:
+            self.define("MPIEXEC_PREFLAGS", "--oversubscribe")
+
+        if self.spec.variants["fortran-bindings"]:
+            if self.spec.variants["fortran-fp"].value == "float":
+                args.append("-DOOMPH_FORTRAN_FP=float")
+            else:
+                args.append("-DOOMPH_FORTRAN_FP=double")
+
         if self.spec.variants["backend"].value == "ucx":
+            args.append("-DOOMPH_WITH_MPI=OFF")
             args.append("-DOOMPH_WITH_UCX=ON")
+            args.append("-DOOMPH_WITH_LIBFABRIC=OFF")
         elif self.spec.variants["backend"].value == "libfabric":
+            args.append("-DOOMPH_WITH_MPI=OFF")
+            args.append("-DOOMPH_WITH_UCX=OFF")
             args.append("-DOOMPH_WITH_LIBFABRIC=ON")
         else:
             args.append("-DOOMPH_WITH_MPI=ON")
+            args.append("-DOOMPH_WITH_UCX=OFF")
+            args.append("-DOOMPH_WITH_LIBFABRIC=OFF")
 
         if "libfabric-provider=verbs" in self.spec:
             args.append("-DOOMPH_LIBFABRIC_PROVIDER=verbs")
@@ -89,6 +98,6 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         elif "libfabric-provider=pwm2" in self.spec:
             args.append("-DOOMPH_LIBFABRIC_PROVIDER=psm2")
 
-        #args.append("-DHWMALLOC_DIR="+self.spec["hwmalloc"].prefix+"/lib64/cmake")
+        args.append("-DHWMALLOC_DIR="+self.spec["hwmalloc"].prefix+"/lib64/cmake")
 
         return args
