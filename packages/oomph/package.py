@@ -51,10 +51,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("mpi")
     depends_on("boost")
 
-    depends_on("googletest")
-
     depends_on("googletest", type="test")
-    depends_on("mpi", type="test")
 
     patch("install_0.2.patch", when="@:0.2.0", level=1)
 
@@ -71,7 +68,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         ]
 
         if self.run_tests:
-            self.define("MPIEXEC_PREFLAGS", "--oversubscribe")
+            args.append("-DMPIEXEC_PREFLAGS=--oversubscribe")
 
         if self.spec.variants["fortran-bindings"].value == True:
             if self.spec.variants["fortran-fp"].value == "float":

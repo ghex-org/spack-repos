@@ -10,20 +10,21 @@ jobs:
   spack-install:
     runs-on: ubuntu-latest
     container: boeschf/ghex-org
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: checkout
         uses: actions/checkout@v3
+      # export OpenMPI environment variables: allow to run as root
       - name: set env
-        shell: bash
         run: |
           echo "OMPI_ALLOW_RUN_AS_ROOT=1" >>  $GITHUB_ENV
           echo "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1" >>  $GITHUB_ENV
       - name: build and test
-        shell: bash
         run: |
           . /opt/spack/share/spack/setup-env-clean.sh
           spack repo add .
           spack spec -I oomph
-          spack install --test=root --verbose --show-log-on-error oomph
-          cat /tmp/root/spack-stage/spack-stage-oomph-0.2.0-xt3kmiaaqzmzun6bmunula2iaearyp2j/spack-build-xt3kmia/Testing/Temporary/LastTest.log
-
+          # need `--dirty` here for environment variables to propagate
+          spack install --dirty --test=root --verbose --show-log-on-error oomph
