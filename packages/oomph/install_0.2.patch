@@ -86,3 +86,15 @@ index ec672b5..a578ef5 100644
 +        target_link_libraries(ext-gtest INTERFACE GTest::gtest GTest::gtest_main)
 +    endif()
  endif()
+diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+index 06d703a..5217bba 100644
+--- a/test/CMakeLists.txt
++++ b/test/CMakeLists.txt
+@@ -65,6 +65,7 @@ function(reg_parallel_test t_ lib n)
+         NAME ${t}
+         COMMAND ${MPIEXEC_EXECUTABLE} ${MPIEXEC_NUMPROC_FLAG} ${n} ${MPIEXEC_PREFLAGS}
+             $<TARGET_FILE:${t}> ${MPIEXEC_POSTFLAGS})
++    set_tests_properties(${t} PROPERTIES RUN_SERIAL TRUE)
+ endfunction()
+ 
+ if (OOMPH_WITH_MPI)
