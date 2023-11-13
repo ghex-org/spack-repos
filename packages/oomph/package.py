@@ -51,7 +51,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("mpi")
     depends_on("boost")
 
-    depends_on("googletest", type="test")
+    depends_on("googletest")
 
     patch("install_path.patch", when="@:0.2.0", level=1)
     patch("gtest.patch", when="@:0.2.0", level=1)
