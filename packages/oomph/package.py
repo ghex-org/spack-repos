@@ -8,6 +8,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     git = "https://github.com/ghex-org/oomph.git"
     maintainers = ["boeschf"]
 
+    version("0.3.0", sha256="61e346d1ba28a859745de47f37edce39c7f5c5e1aab716493dc964e158fd99ec")
     version("0.2.0", sha256="135cdb856aa817c053b6af1617869dbcd0ee97d34607e78874dd775ea389434e")
     version("0.1.0", sha256="0ff36db0a5f30ae1bb02f6db6d411ea72eadd89688c00f76b4e722bd5a9ba90b")
     version("main", branch="main")
