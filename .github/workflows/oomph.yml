@@ -20,3 +20,5 @@ jobs:
           spack repo add .
           spack spec -I oomph
           spack install --test=root --verbose --show-log-on-error oomph
+          cat /tmp/root/spack-stage/spack-stage-oomph-0.2.0-xt3kmiaaqzmzun6bmunula2iaearyp2j/spack-build-xt3kmia/Testing/Temporary/LastTest.log
+
