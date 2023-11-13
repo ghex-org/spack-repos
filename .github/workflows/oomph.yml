@@ -19,4 +19,4 @@ jobs:
           . /opt/spack/share/spack/setup-env-clean.sh
           spack repo add .
           spack spec -I oomph
-          spack install --test=root --verbose oomph
+          spack install --test=root --verbose --show-log-on-error oomph
