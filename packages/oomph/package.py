@@ -8,9 +8,9 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     git = "https://github.com/ghex-org/oomph.git"
     maintainers = ["boeschf"]
 
-    version("0.2.0", sha256="135cdb856aa817c053b6af1617869dbcd0ee97d34607e78874dd775ea389434e", submodules=True)
-    version("0.1.0", sha256="0ff36db0a5f30ae1bb02f6db6d411ea72eadd89688c00f76b4e722bd5a9ba90b", submodules=True)
-    version("main", branch="main", submodules=True)
+    version("0.2.0", sha256="135cdb856aa817c053b6af1617869dbcd0ee97d34607e78874dd775ea389434e")
+    version("0.1.0", sha256="0ff36db0a5f30ae1bb02f6db6d411ea72eadd89688c00f76b4e722bd5a9ba90b")
+    version("main", branch="main")
     # for dev-build
     version("develop")
     
@@ -50,6 +50,11 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
 
     depends_on("mpi")
     depends_on("boost")
+
+    depends_on("googletest", type="test")
+
+    patch("install_path.patch", when="@:0.2.0", level=1)
+    patch("gtest.patch", when="@:0.2.0", level=1)
 
     def cmake_args(self):
         args = [
