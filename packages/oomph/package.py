@@ -53,8 +53,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
 
     depends_on("googletest")
 
-    patch("install_path.patch", when="@:0.2.0", level=1)
-    patch("gtest.patch", when="@:0.2.0", level=1)
+    patch("install_0.2.patch", when="@:0.2.0", level=1)
 
     def cmake_args(self):
         args = [
