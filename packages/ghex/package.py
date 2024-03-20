@@ -9,8 +9,8 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     git = "https://github.com/ghex-org/GHEX.git"
     maintainers = ["boeschf"]
 
-    version("0.4.0", sha256="a549c3d9d033c1bf7ee3a6f283cdd086192fd02eea0489eb8728df5acfc56564")
-    version("0.3.0", sha256="2629b40ac947817886cc5f06bc594abd47352e09cd756a358db35c03c7579a1c")
+    version("0.4.0", sha256="a549c3d9d033c1bf7ee3a6f283cdd086192fd02eea0489eb8728df5acfc56564", submodules=True)
+    version("0.3.0", sha256="2629b40ac947817886cc5f06bc594abd47352e09cd756a358db35c03c7579a1c", submodules=True)
     # for dev-build
     version("develop")
 
