@@ -34,7 +34,9 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("py-pybind11", when="+python", type="build")
     depends_on("py-mpi4py", when="+python", type=("build", "run"))
     depends_on("py-numpy", when="+python", type=("build", "run"))
-    depends_on("py-pytest", when="+python", type=("test"))
+
+    #depends_on("py-pytest", when="+python", type=("test"))
+    depends_on("py-pytest", when="+python", type=("build","run"))
 
     def cmake_args(self):
         spec = self.spec
