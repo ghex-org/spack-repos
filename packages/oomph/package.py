@@ -41,7 +41,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         depends_on("pmix", when="+use-pmix")
 
     with when("backend=libfabric"):
-        variant("libfabric-provider", default="tcp", description="fabric", values=("cxi", "gni", "psm2", "sockets", "tcp", "verbs"), multi=False)
+        variant("libfabric-provider", default="sockets", description="fabric", values=("cxi", "gni", "psm2", "sockets", "tcp", "verbs"), multi=False)
         depends_on("libfabric fabrics=cxi", when="libfabric-provider=cxi")
         depends_on("libfabric fabrics=gni", when="libfabric-provider=gni")
         depends_on("libfabric fabrics=psm2", when="libfabric-provider=psm2")
