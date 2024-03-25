@@ -71,5 +71,13 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
         if self.run_tests:
             args.append("-DMPIEXEC_PREFLAGS=--oversubscribe")
 
+        if "+cuda" in spec and spec.variants["cuda_arch"].value != "none":
+            arch_str = ";".join(spec.variants["cuda_arch"].value)
+            args.append(self.define("CMAKE_CUDA_ARCHITECTURES", arch_str))
+
+        if "+rocm" in spec and spec.variants["amdgpu_target"].value != "none":
+            arch_str = ";".join(spec.variants["amdgpu_target"].value)
+            args.append(self.define("CMAKE_HIP_ARCHITECTURES", arch_str))
+
         return args
         
