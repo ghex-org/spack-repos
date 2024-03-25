@@ -26,9 +26,10 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("xpmem", when="+xpmem", type=("build", "run"))
     depends_on("googletest", type="test")
 
-    depends_on("oomph backend=mpi", when("backend=mpi"))
-    depends_on("oomph backend=ucx", when("backend=ucx"))
-    depends_on("oomph backend=libfabric", when("backend=libfabric"))
+    depends_on("oomph")
+    depends_on("oomph backend=mpi", when="backend=mpi")
+    depends_on("oomph backend=ucx", when="backend=ucx")
+    depends_on("oomph backend=libfabric", when="backend=libfabric")
     depends_on("oomph+cuda", when="+cuda")
     depends_on("oomph+rocm", when="+rocm")
     depends_on("oomph@0.3:", when="@0.3:")
