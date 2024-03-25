@@ -31,9 +31,10 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("hwmalloc", when="~cuda~rocm")
 
     with when("backend=ucx"):
+        depends_on("ucx+thread_multiple")
         depends_on("ucx+cuda", when="+cuda")
         depends_on("ucx+rocm", when="+rocm")
-        depends_on("ucx", when="~cuda~rocm")
+        #depends_on("ucx", when="~cuda~rocm")
         variant("use-pmix", default="False",
             description="Use PMIx to establisch out-of-band setup")
         variant("use-spin-lock", default="False",
