@@ -50,7 +50,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         depends_on("libfabric fabrics=verbs", when="libfabric-provider=verbs")
 
     depends_on("mpi")
-    depends_on("boost")
+    depends_on("boost+thread")
 
     depends_on("googletest", type="test")
 
