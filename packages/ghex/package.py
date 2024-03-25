@@ -46,12 +46,12 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     def cmake_args(self):
         spec = self.spec
 
-        #if spec["oomph"].satisfies("backend=ucx", False):
-        #    backend = "UCX"
-        #elif spec["oomph"].satisfies("backend=libfabric", False):
-        #    backend = "LIBFABRIC"
-        #else:
-        #    backend = "MPI"
+        if spec["oomph"].satisfies("backend=ucx", False):
+            backend = "UCX"
+        elif spec["oomph"].satisfies("backend=libfabric", False):
+            backend = "LIBFABRIC"
+        else:
+            backend = "MPI"
 
         pyexe = spec["python"].command.path
 
