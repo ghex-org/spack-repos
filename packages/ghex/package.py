@@ -20,8 +20,8 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("cmake@3.21:")
     depends_on("mpi")
     depends_on("boost")
-    depends_on("googletest", type=("build", "test"))
     depends_on("xpmem", when="+xpmem", type=("build", "run"))
+    depends_on("googletest", type="test")
 
     depends_on("oomph")
     depends_on("oomph+cuda", when="+cuda")
@@ -35,8 +35,7 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("py-mpi4py", when="+python", type=("build", "run"))
     depends_on("py-numpy", when="+python", type=("build", "run"))
 
-    #depends_on("py-pytest", when="+python", type=("test"))
-    depends_on("py-pytest", when="+python", type=("build","run"))
+    depends_on("py-pytest", when="+python", type=("test"))
 
     def cmake_args(self):
         spec = self.spec
