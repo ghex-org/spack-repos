@@ -14,6 +14,9 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     # for dev-build
     version("develop")
 
+    variant(
+        "backend", default="mpi", description="Transport backend",
+        values=("mpi", "ucx", "libfabric"), multi=False)
     variant("xpmem", default=False, description="Use xpmem shared memory")
     variant("python", default=True, description="Build Python bindings")
 
@@ -23,7 +26,9 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("xpmem", when="+xpmem", type=("build", "run"))
     depends_on("googletest", type="test")
 
-    depends_on("oomph")
+    depends_on("oomph backend=mpi", when("backend=mpi")
+    depends_on("oomph backend=ucx", when("backend=ucx")
+    depends_on("oomph backend=libfabric", when("backend=libfabric")
     depends_on("oomph+cuda", when="+cuda")
     depends_on("oomph+rocm", when="+rocm")
     depends_on("oomph@0.3:", when="@0.3:")
@@ -40,12 +45,12 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     def cmake_args(self):
         spec = self.spec
 
-        if spec["oomph"].satisfies("backend=ucx", False):
-            backend = "UCX"
-        elif spec["oomph"].satisfies("backend=libfabric", False):
-            backend = "LIBFABRIC"
-        else:
-            backend = "MPI"
+        #if spec["oomph"].satisfies("backend=ucx", False):
+        #    backend = "UCX"
+        #elif spec["oomph"].satisfies("backend=libfabric", False):
+        #    backend = "LIBFABRIC"
+        #else:
+        #    backend = "MPI"
 
         pyexe = spec["python"].command.path
 
