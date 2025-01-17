@@ -14,9 +14,10 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     version("0.3.0", tag="v0.3.0", submodules=True)
     version("master", branch="master", submodules=True)
 
+    backends = ("mpi", "ucx", "libfabric")
     variant(
-        "backend", default="mpi", description="Transport backend",
-        values=("mpi", "ucx", "libfabric"), multi=False)
+        "backend", default="mpi", description="Transport backend", values=backends, multi=False
+    )
     variant("xpmem", default=False, description="Use xpmem shared memory")
     variant("python", default=True, description="Build Python bindings")
 
@@ -27,9 +28,8 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("googletest", type="test")
 
     depends_on("oomph")
-    depends_on("oomph backend=mpi", when="backend=mpi")
-    depends_on("oomph backend=ucx", when="backend=ucx")
-    depends_on("oomph backend=libfabric", when="backend=libfabric")
+    for backend in backends:
+        depends_on(f"oomph backend={backend}", when=f"backend={backend}")
     depends_on("oomph+cuda", when="+cuda")
     depends_on("oomph+rocm", when="+rocm")
     depends_on("oomph@0.3:", when="@0.3:")
@@ -46,13 +46,6 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     def cmake_args(self):
         spec = self.spec
 
-        if spec["oomph"].satisfies("backend=ucx", False):
-            backend = "UCX"
-        elif spec["oomph"].satisfies("backend=libfabric", False):
-            backend = "LIBFABRIC"
-        else:
-            backend = "MPI"
-
         pyexe = spec["python"].command.path
 
         args = [
@@ -60,7 +53,7 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
             self.define("GHEX_USE_BUNDLED_GRIDTOOLS", True),
             self.define("GHEX_USE_BUNDLED_OOMPH", False),
             self.define("GHEX_USE_BUNDLED_GTEST", False),
-            self.define("GHEX_TRANSPORT_BACKEND", backend),
+            self.define("GHEX_TRANSPORT_BACKEND", spec.variants["backend"].value.upper()),
             self.define_from_variant("GHEX_USE_XPMEM", "xpmem"),
             self.define_from_variant("GHEX_BUILD_PYTHON_BINDINGS", "python"),
             self.define("GHEX_PYTHON_LIB_PATH", python_platlib),
