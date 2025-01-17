@@ -12,8 +12,7 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     version("0.4.1", tag="v0.4.1", submodules=True)
     version("0.4.0", tag="v0.4.0", submodules=True)
     version("0.3.0", tag="v0.3.0", submodules=True)
-    # for dev-build
-    version("develop")
+    version("master", branch="master", submodules=True)
 
     variant(
         "backend", default="mpi", description="Transport backend",
