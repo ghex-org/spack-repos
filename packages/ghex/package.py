@@ -21,7 +21,7 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     variant("xpmem", default=False, description="Use xpmem shared memory")
     variant("python", default=True, description="Build Python bindings")
 
-    depends_on("cmake@3.21:")
+    depends_on("cmake@3.21:", type="build")
     depends_on("mpi")
     depends_on("boost")
     depends_on("xpmem", when="+xpmem", type=("build", "run"))
