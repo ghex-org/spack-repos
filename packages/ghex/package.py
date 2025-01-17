@@ -1,11 +1,11 @@
 from spack.package import *
 
-class Ghex(CMakePackage, CudaPackage, ROCmPackage):
-    """"GHEX is a generic halo-exchange library."""
 
-    homepage="https://github.com/ghex-org/GHEX"
+class Ghex(CMakePackage, CudaPackage, ROCmPackage):
+    """GHEX is a generic halo-exchange library."""
+
+    homepage = "https://github.com/ghex-org/GHEX"
     url = "https://github.com/ghex-org/GHEX/archive/refs/tags/v0.3.0.tar.gz"
-    
     git = "https://github.com/ghex-org/GHEX.git"
     maintainers = ["boeschf"]
 
@@ -80,4 +80,3 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
             args.append(self.define("CMAKE_HIP_ARCHITECTURES", arch_str))
 
         return args
-        
