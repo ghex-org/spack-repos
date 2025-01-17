@@ -34,19 +34,18 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("oomph+rocm", when="+rocm")
     depends_on("oomph@0.3:", when="@0.3:")
 
-    extends("python", when="+python")
-    depends_on("python@3.7:", when="+python", type="build")
-    depends_on("py-pip", when="+python", type="build")
-    depends_on("py-pybind11", when="+python", type="build")
-    depends_on("py-mpi4py", when="+python", type=("build", "run"))
-    depends_on("py-numpy", when="+python", type=("build", "run"))
+    with when("+python"):
+        extends("python")
+        depends_on("python@3.7:", type="build")
+        depends_on("py-pip", type="build")
+        depends_on("py-pybind11", type="build")
+        depends_on("py-mpi4py", type=("build", "run"))
+        depends_on("py-numpy", type=("build", "run"))
 
-    depends_on("py-pytest", when="+python", type=("test"))
+        depends_on("py-pytest", when="+python", type=("test"))
 
     def cmake_args(self):
         spec = self.spec
-
-        pyexe = spec["python"].command.path
 
         args = [
             self.define("GHEX_USE_BUNDLED_LIBS", True),
@@ -56,10 +55,12 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
             self.define("GHEX_TRANSPORT_BACKEND", spec.variants["backend"].value.upper()),
             self.define_from_variant("GHEX_USE_XPMEM", "xpmem"),
             self.define_from_variant("GHEX_BUILD_PYTHON_BINDINGS", "python"),
-            self.define("GHEX_PYTHON_LIB_PATH", python_platlib),
             self.define("GHEX_WITH_TESTING", self.run_tests),
             self.define("MPIEXEC_PREFLAGS", "--oversubscribe"),
         ]
+
+        if self.spec.satisfies("+python"):
+            args.append(self.define("GHEX_PYTHON_LIB_PATH", python_platlib))
 
         if self.run_tests:
             args.append("-DMPIEXEC_PREFLAGS=--oversubscribe")
