@@ -63,7 +63,7 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("mpi")
     depends_on("boost+thread")
 
-    depends_on("googletest", type="test")
+    depends_on("googletest", type=("build","test"))
 
     patch("install_0.2.patch", when="@:0.2.0", level=1)
     patch("install_0.3.patch", when="@0.3.0", level=1)
@@ -80,8 +80,8 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
             self.define("OOMPH_USE_BUNDLED_LIBS", False),
         ]
 
-        if self.run_tests:
-            args.append("-DMPIEXEC_PREFLAGS=--oversubscribe")
+        if self.run_tests and self.spec.satisfies("^openmpi"):
+            args.append(self.define("MPIEXEC_PREFLAGS", "--oversubscribe"))
 
         if self.spec.variants["fortran-bindings"].value == True:
             args.append(self.define("OOMPH_FORTRAN_FP", self.spec.variants["fortran-fp"].value))
