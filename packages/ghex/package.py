@@ -25,7 +25,6 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("mpi")
     depends_on("boost")
     depends_on("xpmem", when="+xpmem", type=("build", "run"))
-    depends_on("googletest", type="test")
 
     depends_on("oomph")
     for backend in backends:
@@ -52,8 +51,8 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
         args = [
             self.define("GHEX_USE_BUNDLED_LIBS", True),
             self.define("GHEX_USE_BUNDLED_GRIDTOOLS", True),
+            self.define("GHEX_USE_BUNDLED_GTEST", self.run_tests),
             self.define("GHEX_USE_BUNDLED_OOMPH", False),
-            self.define("GHEX_USE_BUNDLED_GTEST", False),
             self.define("GHEX_TRANSPORT_BACKEND", spec.variants["backend"].value.upper()),
             self.define_from_variant("GHEX_USE_XPMEM", "xpmem"),
             self.define_from_variant("GHEX_BUILD_PYTHON_BINDINGS", "python"),
