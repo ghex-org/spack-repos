@@ -16,9 +16,10 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     # for dev-build
     version("develop")
     
+    backends = ("mpi", "ucx", "libfabric")
     variant(
-        "backend", default="mpi", description="Transport backend",
-        values=("mpi", "ucx", "libfabric"), multi=False)
+        "backend", default="mpi", description="Transport backend", values=backends, multi=False
+    )
 
     variant("fortran-bindings", default=False, description="Build Fortran bindings")
     with when("+fortran-bindings"):
@@ -49,14 +50,17 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         variant("use-spin-lock", default="False", description="Use pthread spin locks")
         depends_on("pmix", when="+use-pmix")
 
+    libfabric_providers = ("cxi", "gni", "psm2", "sockets", "tcp", "verbs")
     with when("backend=libfabric"):
-        variant("libfabric-provider", default="sockets", description="fabric", values=("cxi", "gni", "psm2", "sockets", "tcp", "verbs"), multi=False)
-        depends_on("libfabric fabrics=cxi", when="libfabric-provider=cxi")
-        depends_on("libfabric fabrics=gni", when="libfabric-provider=gni")
-        depends_on("libfabric fabrics=psm2", when="libfabric-provider=psm2")
-        depends_on("libfabric fabrics=sockets", when="libfabric-provider=sockets")
-        depends_on("libfabric fabrics=tcp", when="libfabric-provider=tcp")
-        depends_on("libfabric fabrics=verbs", when="libfabric-provider=verbs")
+        variant(
+            "libfabric-provider",
+            default="sockets",
+            description="fabric",
+            values=libfabric_providers,
+            multi=False,
+        )
+        for provider in libfabric_providers:
+            depends_on(f"libfabric fabrics={provider}", when=f"libfabric-provider={provider}")
 
     depends_on("mpi")
     depends_on("boost+thread")
@@ -82,35 +86,20 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
             args.append("-DMPIEXEC_PREFLAGS=--oversubscribe")
 
         if self.spec.variants["fortran-bindings"].value == True:
-            if self.spec.variants["fortran-fp"].value == "float":
-                args.append("-DOOMPH_FORTRAN_FP=float")
-            else:
-                args.append("-DOOMPH_FORTRAN_FP=double")
+            args.append(self.define("OOMPH_FORTRAN_FP", self.spec.variants["fortran-fp"].value))
 
-        if self.spec.variants["backend"].value == "ucx":
-            args.append("-DOOMPH_WITH_MPI=OFF")
-            args.append("-DOOMPH_WITH_UCX=ON")
-            args.append("-DOOMPH_WITH_LIBFABRIC=OFF")
-        elif self.spec.variants["backend"].value == "libfabric":
-            args.append("-DOOMPH_WITH_MPI=OFF")
-            args.append("-DOOMPH_WITH_UCX=OFF")
-            args.append("-DOOMPH_WITH_LIBFABRIC=ON")
-        else:
-            args.append("-DOOMPH_WITH_MPI=ON")
-            args.append("-DOOMPH_WITH_UCX=OFF")
-            args.append("-DOOMPH_WITH_LIBFABRIC=OFF")
+        for backend in self.backends:
+            args.append(
+                self.define(
+                    f"OOMPH_WITH_{backend.upper()}", self.spec.variants["backend"].value == backend
+                )
+            )
 
-        if "libfabric-provider=verbs" in self.spec:
-            args.append("-DOOMPH_LIBFABRIC_PROVIDER=verbs")
-        elif "libfabric-provider=gni" in self.spec:
-            args.append("-DOOMPH_LIBFABRIC_PROVIDER=gni")
-        elif "libfabric-provider=cxi" in self.spec:
-            args.append("-DOOMPH_LIBFABRIC_PROVIDER=cxi")
-        elif "libfabric-provider=tcp" in self.spec:
-            args.append("-DOOMPH_LIBFABRIC_PROVIDER=tcp")
-        elif "libfabric-provider=sockets" in self.spec:
-            args.append("-DOOMPH_LIBFABRIC_PROVIDER=sockets")
-        elif "libfabric-provider=pwm2" in self.spec:
-            args.append("-DOOMPH_LIBFABRIC_PROVIDER=psm2")
+        if self.spec.satisfies("backend=libfabric"):
+            args.append(
+                self.define(
+                    "OOMPH_LIBFABRIC_PROVIDER", self.spec.variants["libfabric-provider"].value
+                )
+            )
 
         return args
