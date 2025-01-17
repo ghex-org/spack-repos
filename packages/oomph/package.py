@@ -1,9 +1,10 @@
 from spack.package import *
 
-class Oomph(CMakePackage, CudaPackage, ROCmPackage):
-    """"Oomph is a non-blocking callback-based point-to-point communication library."""
 
-    homepage="https://github.com/ghex-org/oomph"
+class Oomph(CMakePackage, CudaPackage, ROCmPackage):
+    """Oomph is a non-blocking callback-based point-to-point communication library."""
+
+    homepage = "https://github.com/ghex-org/oomph"
     url = "https://github.com/ghex-org/oomph/archive/refs/tags/v0.2.0.tar.gz"
     git = "https://github.com/ghex-org/oomph.git"
     maintainers = ["boeschf"]
@@ -21,10 +22,20 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
 
     variant("fortran-bindings", default=False, description="Build Fortran bindings")
     with when("+fortran-bindings"):
-        variant("fortran-fp", default="float", description="Floating point type", values=("float", "double"), multi=False)
+        variant(
+            "fortran-fp",
+            default="float",
+            description="Floating point type",
+            values=("float", "double"),
+            multi=False,
+        )
         variant("fortran-openmp", default=True, description="Compile with OpenMP")
 
-    variant("enable-barrier", default=True, description="Enalbe thread barrier (disable for task based runtime)")
+    variant(
+        "enable-barrier",
+        default=True,
+        description="Enable thread barrier (disable for task based runtime)",
+    )
 
     depends_on("hwmalloc+cuda", when="+cuda")
     depends_on("hwmalloc+rocm", when="+rocm")
@@ -34,11 +45,8 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         depends_on("ucx+thread_multiple")
         depends_on("ucx+cuda", when="+cuda")
         depends_on("ucx+rocm", when="+rocm")
-        #depends_on("ucx", when="~cuda~rocm")
-        variant("use-pmix", default="False",
-            description="Use PMIx to establisch out-of-band setup")
-        variant("use-spin-lock", default="False",
-            description="Use pthread spin locks")
+        variant("use-pmix", default="False", description="Use PMIx to establish out-of-band setup")
+        variant("use-spin-lock", default="False", description="Use pthread spin locks")
         depends_on("pmix", when="+use-pmix")
 
     with when("backend=libfabric"):
