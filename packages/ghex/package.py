@@ -34,6 +34,8 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     depends_on("oomph+rocm", when="+rocm")
     depends_on("oomph@0.3:", when="@0.3:")
 
+    conflicts("+cuda+rocm")
+
     with when("+python"):
         extends("python")
         depends_on("python@3.7:", type="build")
