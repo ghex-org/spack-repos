@@ -14,6 +14,11 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
     version("0.1.0", sha256="0ff36db0a5f30ae1bb02f6db6d411ea72eadd89688c00f76b4e722bd5a9ba90b")
     version("main", branch="main")
 
+    depends_on("cxx", type="build")
+    depends_on("fortran", type="build", when="+fortran-bindings")
+
+    generator("ninja")
+
     backends = ("mpi", "ucx", "libfabric")
     variant(
         "backend", default="mpi", description="Transport backend", values=backends, multi=False
@@ -48,11 +53,11 @@ class Oomph(CMakePackage, CudaPackage, ROCmPackage):
         variant("use-spin-lock", default="False", description="Use pthread spin locks")
         depends_on("pmix", when="+use-pmix")
 
-    libfabric_providers = ("cxi", "gni", "psm2", "sockets", "tcp", "verbs")
+    libfabric_providers = ("cxi", "efa", "gni", "psm2", "tcp", "verbs")
     with when("backend=libfabric"):
         variant(
             "libfabric-provider",
-            default="sockets",
+            default="tcp",
             description="fabric",
             values=libfabric_providers,
             multi=False,

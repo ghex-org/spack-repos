@@ -1,4 +1,4 @@
-name: test-hwmalloc
+name: hwmalloc
 
 on:
   push:
@@ -7,18 +7,13 @@ on:
       - main
 
 jobs:
-  spack-install:
-    runs-on: ubuntu-latest
-    container: boeschf/ghex-org
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: build and test
-        run: |
-          . /opt/spack/share/spack/setup-env-clean.sh
-          spack repo add .
-          spack spec -I hwmalloc
-          spack install --test=root --verbose --show-log-on-error hwmalloc
+  test-hwmalloc:
+    uses: ./.github/workflows/common.yml
+    strategy:
+      matrix:
+        package-version: ['0.3.0', 'master']
+        package-variants: ['']
+    with:
+      package-name: hwmalloc
+      package-version: ${{ matrix.package-version }}
+      package-variants: ${{ matrix.package-variants }}

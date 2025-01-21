@@ -1,0 +1,80 @@
+name: common
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        required: true
+        type: string
+      package-version:
+        required: true
+        type: string
+      package-variants:
+        required: false
+        type: string
+        default: ''
+      test-package:
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  setup-and-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      matrix:
+        spack-version: ['v0.23.0', 'develop-2025-01-19']
+
+    env:
+      REPO_PATH: ghex-org-spack-packages
+      SPACK_PATH: spack
+
+      #fail-fast: false
+
+    steps:
+      - name: Install additional Ubuntu packages
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gfortran libblas-dev
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.REPO_PATH }}
+
+      - name: Configure ccache
+        uses: hendrikmuhs/ccache-action@v1.2.11
+        with:
+          key: ${{ matrix.spack-version }}
+
+      - name: Clone Spack and setup environment
+        run: |
+          git clone -c feature.manyFiles=true --depth 1 --branch ${{ matrix.spack-version }} https://github.com/spack/spack.git ${{ env.SPACK_PATH }}
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack config --scope site add config:ccache:true
+          spack compiler find
+          spack repo add ${{ env.REPO_PATH }}
+          spack reindex
+
+      - name: Set environment variables
+        run: |
+          echo "OMPI_ALLOW_RUN_AS_ROOT=1" >>  $GITHUB_ENV
+          echo "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1" >>  $GITHUB_ENV
+
+      - name: Build package
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }}${{ inputs.package-variants }}
+          spack install --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }}${{ inputs.package-variants }}
+
+      - name: Test package
+        if: ${{ inputs.test-package }}
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack test run ${{ inputs.package-name }}@${{ inputs.package-version }}${{ inputs.package-variants }}
+

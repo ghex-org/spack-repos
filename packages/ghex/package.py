@@ -14,6 +14,10 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
     version("0.3.0", tag="v0.3.0", submodules=True)
     version("master", branch="master", submodules=True)
 
+    depends_on("cxx", type="build")
+
+    generator("ninja")
+
     backends = ("mpi", "ucx", "libfabric")
     variant(
         "backend", default="mpi", description="Transport backend", values=backends, multi=False
