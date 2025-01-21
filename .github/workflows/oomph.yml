@@ -12,11 +12,11 @@ jobs:
     strategy:
       matrix:
         package-version: ['0.3.0', 'main']
-        backends: ['mpi', 'ucx', 'libfabric']
+        backend: ['mpi', 'ucx', 'libfabric']
         fortran-bindings: [true]
     with:
       package-name: oomph
       package-version: ${{ matrix.package-version }}
       package-variants: >-
-        backends=${{ matrix.backends }}
+        backend=${{ matrix.backend }}
         ${{ matrix.fortran-bindings == 'true' && '+fortran-bindings' || '' }}

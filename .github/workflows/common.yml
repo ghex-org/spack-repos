@@ -69,12 +69,12 @@ jobs:
       - name: Build package
         run: |
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
-          spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }}${{ inputs.package-variants }}
-          spack install --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }}${{ inputs.package-variants }}
+          spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+          spack install --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
 
       - name: Test package
         if: ${{ inputs.test-package }}
         run: |
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
-          spack test run ${{ inputs.package-name }}@${{ inputs.package-version }}${{ inputs.package-variants }}
+          spack test run ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
 

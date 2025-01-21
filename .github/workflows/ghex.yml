@@ -12,13 +12,13 @@ jobs:
     strategy:
       matrix:
         package-version: ['0.4.1', 'master']
-        backends: ['mpi', 'ucx', 'libfabric']
+        backend: ['mpi', 'ucx', 'libfabric']
         python-bindings: [true]
         fortran-bindings: [true]
     with:
       package-name: ghex
       package-version: ${{ matrix.package-version }}
       package-variants: >-
-        backends=${{ matrix.backends }}
+        backend=${{ matrix.backend }}
         ${{ matrix.python-bindings == 'true' && '+python-bindings' || '' }}
         ${{ matrix.fortran-bindings == 'true' && '+fortran-bindings' || '' }}
