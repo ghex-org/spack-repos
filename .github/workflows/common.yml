@@ -22,6 +22,10 @@ jobs:
   setup-and-test:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      packages: write
+
     defaults:
       run:
         shell: bash
@@ -57,6 +61,18 @@ jobs:
           git clone -c feature.manyFiles=true --depth 1 --branch ${{ matrix.spack-version }} https://github.com/spack/spack.git ${{ env.SPACK_PATH }}
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
           spack config --scope site add config:ccache:true
+          spack config --scope site add config:install_tree:padded_length:128
+          spack config --scope site add packages:all:require:'target=x86_64_v3'
+          cat <<EOF > ${{ env.SPACK_PATH }}/etc/spack/mirrors.yaml
+          mirrors:
+            ghcr-buildcache:
+              url: oci://ghcr.io/ghex-org/spack-${{ matrix.spack-version }}-buildcache-${{ env.OS_NAME }}-${{ env.OS_VERSION }}
+              signed: false
+              access_pair:
+                id_variable: GITHUB_USER
+                secret_variable: GITHUB_TOKEN
+          EOF
+
           spack compiler find
           spack repo add ${{ env.REPO_PATH }}
           spack reindex
@@ -71,6 +87,15 @@ jobs:
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
           spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
           spack install --only dependencies ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+
+      - name: Push packages and update index
+        env:
+          GITHUB_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack buildcache push --base-image ${{ env.OS_NAME }}:${{ env.OS_VERSION }} --update-index --only dependencies ghcr-buildcache ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+        if: ${{ !cancelled() }}
 
       - name: Build and test package
         if: ${{ inputs.test-package }}
