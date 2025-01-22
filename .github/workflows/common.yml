@@ -81,6 +81,9 @@ jobs:
             ghcr-buildcache:
               url: oci://ghcr.io/ghex-org/spack-${{ matrix.spack-version }}-buildcache-${{ env.OS_NAME }}-${{ env.OS_VERSION }}
               signed: false
+              access_pair:
+                id_variable: GITHUB_USER
+                secret_variable: GITHUB_TOKEN
           EOF
 
           spack compiler find
