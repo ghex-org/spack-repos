@@ -41,6 +41,11 @@ jobs:
       #fail-fast: false
 
     steps:
+      - name: Define OS variables
+        run: |
+          echo "OS_NAME=ubuntu" >> $GITHUB_ENV
+          echo "OS_VERSION=$(lsb_release -rs)" >> $GITHUB_ENV
+
       - name: Install additional Ubuntu packages
         run: |
           sudo apt-get update -qq
