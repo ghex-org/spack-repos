@@ -32,8 +32,7 @@ jobs:
 
     strategy:
       matrix:
-        #spack-version: ['v0.23.0', 'develop-2025-01-19']
-        spack-version: ['v0.23.0']
+        spack-version: ['v0.23.0', 'develop-2025-01-19']
 
     env:
       REPO_PATH: ghex-org-spack-packages
