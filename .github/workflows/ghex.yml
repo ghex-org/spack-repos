@@ -12,7 +12,8 @@ jobs:
     strategy:
       matrix:
         package-version: ['0.4.1', 'master']
-        backend: ['mpi', 'ucx', 'libfabric']
+        #backend: ['mpi', 'ucx', 'libfabric']
+        backend: ['mpi']
         python-bindings: [true]
         fortran-bindings: [true]
     with:

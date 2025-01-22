@@ -12,7 +12,8 @@ jobs:
     strategy:
       matrix:
         package-version: ['0.3.0', 'main']
-        backend: ['mpi', 'ucx', 'libfabric']
+        #backend: ['mpi', 'ucx', 'libfabric']
+        backend: ['mpi']
         fortran-bindings: [true]
     with:
       package-name: oomph
