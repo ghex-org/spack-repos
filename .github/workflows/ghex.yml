@@ -11,12 +11,12 @@ permissions:
   packages: write
 
 jobs:
-  if: false
   test-ghex:
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        package-version: ['0.4.1', 'master']
+        #package-version: ['0.4.1', 'master']
+        package-version: ['master']
         #backend: ['mpi', 'ucx', 'libfabric']
         backend: ['mpi']
         python-bindings: [true]
