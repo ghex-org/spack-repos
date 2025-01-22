@@ -81,6 +81,8 @@ jobs:
           spack compiler find
           spack repo add ${{ env.REPO_PATH }}
           spack reindex
+          spack buildcache update-index ghcr-buildcache
+          spack buildcache list
 
       - name: Set environment variables
         run: |
