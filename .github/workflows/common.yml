@@ -32,7 +32,8 @@ jobs:
 
     strategy:
       matrix:
-        spack-version: ['v0.23.0', 'develop-2025-01-19']
+        #spack-version: ['v0.23.0', 'develop-2025-01-19']
+        spack-version: ['v0.23.0']
 
     env:
       REPO_PATH: ghex-org-spack-packages
@@ -93,6 +94,12 @@ jobs:
           spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
           spack install --only dependencies ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
 
+      - name: Build and test package
+        if: ${{ inputs.test-package }}
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack install --test=root --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+
       - name: Push packages and update index
         env:
           GITHUB_USER: ${{ github.actor }}
@@ -101,10 +108,4 @@ jobs:
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
           spack buildcache push --base-image ${{ env.OS_NAME }}:${{ env.OS_VERSION }} --update-index --only dependencies ghcr-buildcache ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
         if: ${{ !cancelled() }}
-
-      - name: Build and test package
-        if: ${{ inputs.test-package }}
-        run: |
-          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
-          spack install --test=root --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
 

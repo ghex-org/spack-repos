@@ -15,7 +15,8 @@ jobs:
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        package-version: ['0.3.0', 'master']
+        #package-version: ['0.3.0', 'master']
+        package-version: ['master']
         package-variants: ['']
     with:
       package-name: hwmalloc

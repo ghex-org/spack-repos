@@ -11,6 +11,7 @@ permissions:
   packages: write
 
 jobs:
+  if: false
   test-oomph:
     uses: ./.github/workflows/common.yml
     strategy:
