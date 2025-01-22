@@ -22,6 +22,9 @@ jobs:
   setup-and-test:
     runs-on: ubuntu-latest
 
+    # Ensure this job only runs in the upstream repository
+    if: ${{ github.repository == 'ghex-org/spack-repos' }}
+
     permissions:
       contents: read
       packages: write
@@ -38,13 +41,15 @@ jobs:
       REPO_PATH: ghex-org-spack-packages
       SPACK_PATH: spack
 
-      #fail-fast: false
+      fail-fast: false
 
     steps:
-      - name: Define OS variables
+      - name: Set environment variables
         run: |
           echo "OS_NAME=ubuntu" >> $GITHUB_ENV
           echo "OS_VERSION=$(lsb_release -rs)" >> $GITHUB_ENV
+          echo "OMPI_ALLOW_RUN_AS_ROOT=1" >>  $GITHUB_ENV
+          echo "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1" >>  $GITHUB_ENV
 
       - name: Install additional Ubuntu packages
         run: |
@@ -76,9 +81,6 @@ jobs:
             ghcr-buildcache:
               url: oci://ghcr.io/ghex-org/spack-${{ matrix.spack-version }}-buildcache-${{ env.OS_NAME }}-${{ env.OS_VERSION }}
               signed: false
-              access_pair:
-                id_variable: GITHUB_USER
-                secret_variable: GITHUB_TOKEN
           EOF
 
           spack compiler find
@@ -86,11 +88,6 @@ jobs:
           spack reindex
           spack buildcache update-index ghcr-buildcache
           spack buildcache list
-
-      - name: Set environment variables
-        run: |
-          echo "OMPI_ALLOW_RUN_AS_ROOT=1" >>  $GITHUB_ENV
-          echo "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1" >>  $GITHUB_ENV
 
       - name: Build dependencies
         run: |
@@ -112,4 +109,5 @@ jobs:
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
           spack buildcache push --base-image ${{ env.OS_NAME }}:${{ env.OS_VERSION }} --update-index --only dependencies ghcr-buildcache ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
         if: ${{ !cancelled() }}
+        continue-on-error: true
 
