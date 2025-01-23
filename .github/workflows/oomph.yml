@@ -18,7 +18,7 @@ jobs:
         #package-version: ['0.3.0', 'main']
         package-version: ['main']
         #backend: ['mpi', 'ucx', 'libfabric']
-        backend: ['mpi']
+        backend: ['mpi', 'ucx']
         fortran-bindings: [true]
     with:
       package-name: oomph
