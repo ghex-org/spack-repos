@@ -18,11 +18,14 @@ jobs:
         #package-version: ['0.3.0', 'main']
         package-version: ['main']
         #backend: ['mpi', 'ucx', 'libfabric']
-        backend: ['mpi', 'ucx']
+        backend: ['mpi']
         fortran-bindings: [true]
+        cuda: [true]
     with:
       package-name: oomph
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         backend=${{ matrix.backend }}
         ${{ matrix.fortran-bindings == 'true' && '+fortran-bindings' || '' }}
+        ${{ matrix.cuda == 'true' && '+cuda' || '' }}
+      test-package: ${{ !matrix.cuda }}

@@ -91,6 +91,12 @@ jobs:
           spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
           spack install --only dependencies ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
 
+      - name: Build package without testing
+        if: ${{ !inputs.test-package }}
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack install --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+
       - name: Build and test package
         if: ${{ inputs.test-package }}
         run: |
