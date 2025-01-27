@@ -26,5 +26,5 @@ jobs:
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         backend=${{ matrix.backend }}
-        ${{ matrix.python-bindings && '+python-bindings' || '' }}
+        ${{ matrix.python-bindings && '+python' || '' }}
       test-package: ${{ !matrix.cuda }}
