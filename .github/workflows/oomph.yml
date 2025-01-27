@@ -24,5 +24,8 @@ jobs:
     with:
       package-name: oomph
       package-version: ${{ matrix.package-version }}
-      package-variants: backend=${{ matrix.backend }} ${{ matrix.fortran-bindings == 'true' && '+fortran-bindings' || '' }} ${{ matrix.cuda == 'true' && '+cuda' || '' }}
+      package-variants: >-
+        backend=${{ matrix.backend }}
+        ${{ " +fortran.bindings" if matrix.fortran-bindings else "" }}
+        ${{ " +cuda" if matrix.cuda else "" }}
       test-package: ${{ !matrix.cuda }}
