@@ -20,11 +20,13 @@ jobs:
         #backend: ['mpi', 'ucx', 'libfabric']
         backend: ['mpi']
         python-bindings: [true]
-        cuda: [false]
+        device: ['cpu']
     with:
       package-name: ghex
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         backend=${{ matrix.backend }}
         ${{ matrix.python-bindings && '+python' || '' }}
-      test-package: ${{ !matrix.cuda }}
+        ${{ matrix.device == 'cuda' && '+cuda' || '' }}
+        ${{ matrix.device == 'rocm' && '+rocm' || '' }}
+      test-package: ${{ matrix.device == 'cpu' }}

@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         package-version: ['0.3.0', 'master']
-        device: ['cpu', 'cuda', 'rocm']
+        device: ['cpu', 'cuda']
     with:
       package-name: hwmalloc
       package-version: ${{ matrix.package-version }}

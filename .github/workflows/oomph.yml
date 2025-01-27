@@ -20,12 +20,13 @@ jobs:
         #backend: ['mpi', 'ucx', 'libfabric']
         backend: ['mpi']
         fortran-bindings: [false]
-        cuda: [false]
+        device: ['cpu']
     with:
       package-name: oomph
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         backend=${{ matrix.backend }}
         ${{ matrix.fortran-bindings && '+fortran-bindings' || '' }}
-        ${{ matrix.cuda && '+cuda' || '' }}
-      test-package: ${{ !matrix.cuda }}
+        ${{ matrix.device == 'cuda' && '+cuda' || '' }}
+        ${{ matrix.device == 'rocm' && '+rocm' || '' }}
+      test-package: ${{ matrix.device == 'cpu' }}
