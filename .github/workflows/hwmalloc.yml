@@ -16,11 +16,13 @@ jobs:
     strategy:
       matrix:
         package-version: ['0.3.0', 'master']
-        device: ['cpu', 'cuda']
+        compiler: ['gcc@13.3.0']
+        device: ['cpu']
     with:
       package-name: hwmalloc
       package-version: ${{ matrix.package-version }}
       package-variants: >-
+        %${{ matrix.compiler }}
         ${{ matrix.device == 'cuda' && '+cuda' || '' }}
         ${{ matrix.device == 'rocm' && '+rocm' || '' }}
       test-package: ${{ matrix.device == 'cpu' }}
