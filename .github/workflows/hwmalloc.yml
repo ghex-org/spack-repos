@@ -17,12 +17,12 @@ jobs:
       matrix:
         package-version: ['0.3.0', 'master']
         compiler: ['gcc@13.3.0']
-        device: ['cpu']
+        device: ['cpu', 'cuda']
     with:
       package-name: hwmalloc
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         %${{ matrix.compiler }}
-        ${{ matrix.device == 'cuda' && '+cuda' || '' }}
-        ${{ matrix.device == 'rocm' && '+rocm' || '' }}
+        ${{ matrix.device == 'cuda' && '+cuda cuda_arch=90' || '' }}
+        ${{ matrix.device == 'rocm' && '+rocm amgdgpu_target=gfx942' || '' }}
       test-package: ${{ matrix.device == 'cpu' }}
