@@ -15,14 +15,15 @@ jobs:
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        package-version: ['0.3.0', 'master']
+        #package-version: ['0.3.0', 'master']
+        package-version: ['master']
         compiler: ['gcc@13.3.0']
-        device: ['cpu', 'cuda']
+        device: ['cpu', 'cuda', 'rocm']
     with:
       package-name: hwmalloc
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         %${{ matrix.compiler }}
         ${{ matrix.device == 'cuda' && '+cuda cuda_arch=90' || '' }}
-        ${{ matrix.device == 'rocm' && '+rocm amdgpu_target=gfx942' || '' }}
+        ${{ matrix.device == 'rocm' && '+rocm amdgpu_target=gfx90a' || '' }}
       test-package: ${{ matrix.device == 'cpu' }}
