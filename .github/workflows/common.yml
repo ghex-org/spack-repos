@@ -88,6 +88,7 @@ jobs:
       - name: Build dependencies
         run: |
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          echo "spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}"
           spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
           spack install --only dependencies ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
 
