@@ -26,6 +26,6 @@ jobs:
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         backend=${{ matrix.backend }}
-        ${{ ' +fortran.bindings' if matrix.fortran-bindings else '' }}
-        ${{ ' +cuda' if matrix.cuda else '' }}
+        ${{ matrix.fortran-bindings && '+fortran-bindings' || '' }}
+        ${{ matrix.cuda && '+cuda' || '' }}
       test-package: ${{ !matrix.cuda }}
