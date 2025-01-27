@@ -24,5 +24,5 @@ jobs:
       package-variants: >-
         %${{ matrix.compiler }}
         ${{ matrix.device == 'cuda' && '+cuda cuda_arch=90' || '' }}
-        ${{ matrix.device == 'rocm' && '+rocm amgdgpu_target=gfx942' || '' }}
+        ${{ matrix.device == 'rocm' && '+rocm amdgpu_target=gfx942' || '' }}
       test-package: ${{ matrix.device == 'cpu' }}
