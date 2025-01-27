@@ -20,8 +20,11 @@ jobs:
         #backend: ['mpi', 'ucx', 'libfabric']
         backend: ['mpi']
         python-bindings: [true]
-        fortran-bindings: [true]
+        cuda: [false]
     with:
       package-name: ghex
       package-version: ${{ matrix.package-version }}
-      package-variants: backend=${{ matrix.backend }} ${{ matrix.python-bindings == 'true' && '+python-bindings' || '' }} ${{ matrix.fortran-bindings == 'true' && '+fortran-bindings' || '' }}
+      package-variants: >-
+        backend=${{ matrix.backend }}
+        ${{ matrix.python-bindings && '+python-bindings' || '' }}
+      test-package: ${{ !matrix.cuda }}
