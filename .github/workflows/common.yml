@@ -98,7 +98,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
-          spack --color never find --format '{/hash};' | sed 's/;[[:space:]]*//g' | xargs -I{} spack buildcache push --base-image ${{ env.OS_NAME }}:${{ env.OS_VERSION }} ghcr-buildcache  {}
+          spack --color never find --format '{/hash};' | sed 's/;[[:space:]]*//g' | xargs -I{} spack buildcache push --base-image ${{ env.OS_NAME }}:${{ env.OS_VERSION }} --only package ghcr-buildcache  {}
         if: ${{ !cancelled() }}
         continue-on-error: true
 
