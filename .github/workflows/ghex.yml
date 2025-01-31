@@ -12,17 +12,14 @@ permissions:
 
 jobs:
   test-ghex:
-    if: false
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        #package-version: ['0.4.1', 'master']
-        package-version: ['master']
+        package-version: ['0.4.1', 'master']
         compiler: ['gcc@13.3.0']
-        #backend: ['mpi', 'ucx', 'libfabric']
-        backend: ['mpi']
+        backend: ['mpi', 'ucx']
         python-bindings: [true]
-        device: ['cpu']
+        device: ['cpu', 'cuda']
     with:
       package-name: ghex
       package-version: ${{ matrix.package-version }}

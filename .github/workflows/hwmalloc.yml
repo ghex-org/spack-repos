@@ -15,10 +15,9 @@ jobs:
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        #package-version: ['0.3.0', 'master']
-        package-version: ['master']
+        package-version: ['0.3.0', 'master']
         compiler: ['gcc@13.3.0']
-        device: ['cpu', 'cuda', 'rocm']
+        device: ['cpu', 'cuda']
     with:
       package-name: hwmalloc
       package-version: ${{ matrix.package-version }}

@@ -12,17 +12,14 @@ permissions:
 
 jobs:
   test-oomph:
-    if: false
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        #package-version: ['0.3.0', 'main']
-        package-version: ['main']
+        package-version: ['0.3.0', 'main']
         compiler: ['gcc@13.3.0']
-        #backend: ['mpi', 'ucx', 'libfabric']
-        backend: ['mpi']
+        backend: ['mpi', 'ucx']
         fortran-bindings: [false]
-        device: ['cpu']
+        device: ['cpu', 'cuda']
     with:
       package-name: oomph
       package-version: ${{ matrix.package-version }}
