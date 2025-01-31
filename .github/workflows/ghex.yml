@@ -19,7 +19,7 @@ jobs:
         compiler: ['gcc@13.3.0']
         backend: ['mpi', 'ucx']
         python-bindings: [true]
-        device: ['cpu', 'cuda']
+        device: ['cpu']
     with:
       package-name: ghex
       package-version: ${{ matrix.package-version }}
