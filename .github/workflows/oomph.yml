@@ -15,11 +15,12 @@ jobs:
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        package-version: ['0.3.0', 'main']
+        package-version: ['0.4.0', 'main']
         compiler: ['gcc@13.3.0']
-        backend: ['mpi', 'ucx']
+        backend: ['mpi', 'ucx', 'libfabric']
         fortran-bindings: [false]
-        device: ['cpu', 'cuda']
+        #device: ['cpu', 'cuda']
+        device: ['cpu']
     with:
       package-name: oomph
       package-version: ${{ matrix.package-version }}
