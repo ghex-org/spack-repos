@@ -17,10 +17,9 @@ jobs:
       matrix:
         package-version: ['0.4.0', 'main']
         compiler: ['gcc@13.3.0']
-        backend: ['mpi', 'ucx', 'libfabric']
+        backend: ['mpi', 'ucx']
         fortran-bindings: [false]
-        #device: ['cpu', 'cuda']
-        device: ['cpu']
+        device: ['cpu', 'cuda']
     with:
       package-name: oomph
       package-version: ${{ matrix.package-version }}
