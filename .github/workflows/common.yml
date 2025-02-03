@@ -1,0 +1,115 @@
+name: common
+
+on:
+  workflow_call:
+    inputs:
+      package-name:
+        required: true
+        type: string
+      package-version:
+        required: true
+        type: string
+      package-variants:
+        required: false
+        type: string
+        default: ''
+      test-package:
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  setup-and-test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    defaults:
+      run:
+        shell: bash
+
+    strategy:
+      matrix:
+        spack-version: ['v0.23.0', 'develop-2025-01-19']
+
+    env:
+      REPO_PATH: ghex-org-spack-packages
+      SPACK_PATH: spack
+
+      fail-fast: false
+
+    steps:
+      - name: Set environment variables
+        run: |
+          echo "OS_NAME=ubuntu" >> $GITHUB_ENV
+          echo "OS_VERSION=$(lsb_release -rs)" >> $GITHUB_ENV
+          echo "OMPI_ALLOW_RUN_AS_ROOT=1" >>  $GITHUB_ENV
+          echo "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1" >>  $GITHUB_ENV
+
+      - name: Install additional Ubuntu packages
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y gfortran libblas-dev
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.REPO_PATH }}
+
+      - name: Configure ccache
+        uses: hendrikmuhs/ccache-action@v1.2.11
+        with:
+          key: ${{ matrix.spack-version }}
+
+      - name: Clone Spack and setup environment
+        run: |
+          git clone -c feature.manyFiles=true --depth 1 --branch ${{ matrix.spack-version }} https://github.com/spack/spack.git ${{ env.SPACK_PATH }}
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack config --scope site add config:ccache:true
+          spack config --scope site add config:install_tree:padded_length:128
+          spack config --scope site add packages:all:require:'target=x86_64_v3'
+          cat <<EOF > ${{ env.SPACK_PATH }}/etc/spack/mirrors.yaml
+          mirrors:
+            ghcr-buildcache:
+              url: oci://ghcr.io/ghex-org/spack-${{ matrix.spack-version }}-buildcache-${{ env.OS_NAME }}-${{ env.OS_VERSION }}
+              signed: false
+              access_pair:
+                id_variable: GITHUB_USER
+                secret_variable: GITHUB_TOKEN
+          EOF
+
+          spack compiler find
+          spack repo add ${{ env.REPO_PATH }}
+          spack reindex
+          spack buildcache list
+
+      - name: Build dependencies
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          echo "spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}"
+          spack spec -I ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+          spack install --only dependencies ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+
+      - name: Push packages to buildcache
+        env:
+          GITHUB_USER: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack --color never find --format '{/hash};' | sed 's/;[[:space:]]*//g' | xargs -I{} spack buildcache push --base-image ${{ env.OS_NAME }}:${{ env.OS_VERSION }} --only package ghcr-buildcache  {}
+        if: ${{ !cancelled() }}
+        continue-on-error: true
+
+      - name: Build package without testing
+        if: ${{ !inputs.test-package }}
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack install --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
+
+      - name: Build and test package
+        if: ${{ inputs.test-package }}
+        run: |
+          . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
+          spack install --test=root --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}

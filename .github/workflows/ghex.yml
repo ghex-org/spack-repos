@@ -1,4 +1,4 @@
-name: oomph
+name: ghex
 
 on:
   push:
@@ -13,22 +13,22 @@ permissions:
   packages: write
 
 jobs:
-  test-oomph:
+  test-ghex:
     uses: ./.github/workflows/common.yml
     strategy:
       matrix:
-        package-version: ['0.4.0', 'main']
+        package-version: ['0.4.1', 'master']
         compiler: ['gcc@13.3.0']
         backend: ['mpi', 'ucx']
-        fortran-bindings: [false]
-        device: ['cpu', 'cuda']
+        python-bindings: [true]
+        device: ['cpu']
     with:
-      package-name: oomph
+      package-name: ghex
       package-version: ${{ matrix.package-version }}
       package-variants: >-
         %${{ matrix.compiler }}
         backend=${{ matrix.backend }}
-        ${{ matrix.fortran-bindings && '+fortran-bindings' || '' }}
-        ${{ matrix.device == 'cuda' && '+cuda cuda_arch=90' || '' }}
-        ${{ matrix.device == 'rocm' && '+rocm amdgpu_target=gfx942' || '' }}
+        ${{ matrix.python-bindings && '+python' || '' }}
+        ${{ matrix.device == 'cuda' && '+cuda' || '' }}
+        ${{ matrix.device == 'rocm' && '+rocm' || '' }}
       test-package: ${{ matrix.device == 'cpu' }}
