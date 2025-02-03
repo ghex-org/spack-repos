@@ -113,13 +113,3 @@ jobs:
         run: |
           . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
           spack install --test=root --verbose --show-log-on-error ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
-
-      #- name: Push packages and update index
-      #  env:
-      #    GITHUB_USER: ${{ github.actor }}
-      #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #  run: |
-      #    . ${{ env.SPACK_PATH }}/share/spack/setup-env.sh
-      #    spack buildcache push --base-image ${{ env.OS_NAME }}:${{ env.OS_VERSION }} --update-index --only dependencies ghcr-buildcache ${{ inputs.package-name }}@${{ inputs.package-version }} ${{ inputs.package-variants }}
-      #  if: ${{ !cancelled() }}
-      #  continue-on-error: true
