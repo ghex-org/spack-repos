@@ -63,10 +63,10 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
             self.define("GHEX_WITH_TESTING", self.run_tests),
         ]
 
-        if self.spec.satisfies("+python"):
+        if spec.satisfies("+python"):
             args.append(self.define("GHEX_PYTHON_LIB_PATH", python_platlib))
 
-        if self.run_tests and self.spec.satisfies("^openmpi"):
+        if self.run_tests and spec.satisfies("^openmpi"):
             args.append(self.define("MPIEXEC_PREFLAGS", "--oversubscribe"))
 
         if "+cuda" in spec and spec.variants["cuda_arch"].value != "none":
@@ -81,7 +81,7 @@ class Ghex(CMakePackage, CudaPackage, ROCmPackage):
             args.append(self.define("GHEX_USE_GPU", True))
             args.append(self.define("GHEX_GPU_TYPE", "AMD"))
 
-        if self.spec.satisfies("~cuda~rocm"):
+        if spec.satisfies("~cuda~rocm"):
             args.append(self.define("GHEX_USE_GPU", False))
 
         return args
